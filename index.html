@@ -3,450 +3,642 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generador de Presupuestos - deKor Pintura</title>
-
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons CDN -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <!-- html2pdf.js CDN para generación de PDF de alta resolución -->
+  <title>Presupuesto Oficial - deKor Pintura</title>
+  <!-- Librería para generar y descargar PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
+  <!-- Tipografía moderna Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap');
+    :root {
+      --primary-green: #249a44;
+      --primary-dark: #0f172a;
+      --panel-bg: #1e293b;
+      --panel-card: #334155;
+      --panel-border: #475569;
+      --text-light: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #0f172a;
-      color: #334155;
-    }
-
-    /* Medidas exactas de hoja A4 (210mm x 297mm) con escala real */
-    .a4-sheet {
-      width: 210mm;
-      min-height: 297mm;
-      padding: 18mm 22mm 18mm 22mm;
-      margin: 0 auto;
-      background: #ffffff;
-      box-sizing: border-box;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
-      position: relative;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0b1120;
+      color: var(--text-light);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      color: #111827;
-      line-height: 1.5;
     }
 
-    /* Caja de Fecha Premium con identidad corporativa */
-    .fecha-card {
-      border: 1.5px solid #16a34a;
-      border-radius: 6px;
-      overflow: hidden;
-      width: 190px;
-      background: #ffffff;
-      box-shadow: 0 2px 5px rgba(22, 163, 74, 0.08);
+    /* Barra Superior */
+    header.app-nav {
+      background: #0f172a;
+      border-bottom: 1px solid #1e293b;
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
 
-    .fecha-card-header {
-      background: #16a34a;
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       color: #ffffff;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      text-align: center;
-      padding: 4px 8px;
     }
 
-    .fecha-card-body {
-      font-size: 13.5px;
+    .brand-badge {
+      background: var(--primary-green);
+      color: white;
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 6px;
       font-weight: 600;
-      color: #1e293b;
-      text-align: center;
-      padding: 6px 8px;
-      background: #ffffff;
     }
 
-    /* Subrayado continuo y limpio para título y condiciones */
-    .border-rule {
-      border-bottom: 1.5px solid #0f172a;
+    .action-buttons {
+      display: flex;
+      gap: 12px;
     }
 
-    /* Personalización del scrollbar en panel lateral */
-    .custom-scroll::-webkit-scrollbar {
-      width: 6px;
+    .btn {
+      font-family: inherit;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      transition: all 0.2s ease;
     }
-    .custom-scroll::-webkit-scrollbar-track {
-      background: #1e293b;
-    }
-    .custom-scroll::-webkit-scrollbar-thumb {
+
+    .btn-secondary {
       background: #334155;
-      border-radius: 9999px;
+      color: #ffffff;
     }
-    .custom-scroll::-webkit-scrollbar-thumb:hover {
+
+    .btn-secondary:hover {
       background: #475569;
     }
 
-    /* Reglas para impresión física o Guardar como PDF del navegador */
+    .btn-primary {
+      background: #16a34a;
+      color: white;
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: #15803d;
+      transform: translateY(-1px);
+    }
+
+    /* Contenedor Principal (Panel Izquierdo + Hoja Derecha) */
+    .workspace {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      flex: 1;
+      height: calc(100vh - 73px);
+      overflow: hidden;
+    }
+
+    /* Panel de Edición */
+    .editor-sidebar {
+      background: var(--panel-bg);
+      border-right: 1px solid #334155;
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .section-card {
+      background: var(--panel-card);
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .section-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #38bdf8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    input[type="text"],
+    textarea {
+      font-family: inherit;
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #ffffff;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: #38bdf8;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    /* Input con calendario */
+    .date-input-wrapper {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .date-input-wrapper input[type="text"] {
+      flex: 1;
+    }
+
+    .btn-calendar {
+      background: #0ea5e9;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    .btn-calendar:hover {
+      background: #0284c7;
+    }
+
+    /* Lista dinámica de puntos */
+    .items-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      background: #1e293b;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #475569;
+    }
+
+    .item-num {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: #38bdf8;
+      padding-top: 6px;
+      width: 22px;
+    }
+
+    .item-row textarea {
+      flex: 1;
+      min-height: 54px;
+    }
+
+    .btn-del-item {
+      background: transparent;
+      border: none;
+      color: #f87171;
+      padding: 6px 8px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 1.1rem;
+    }
+
+    .btn-del-item:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-add-item {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px dashed #38bdf8;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .btn-add-item:hover {
+      background: rgba(56, 189, 248, 0.25);
+    }
+
+    /* Área de Previsualización (A4) */
+    .preview-stage {
+      background: #64748b;
+      overflow-y: auto;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    /* Hoja A4 estándar */
+    .a4-sheet {
+      background: #ffffff;
+      color: #111827;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 24mm 22mm 24mm 22mm;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Cabecera del Documento */
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 34px;
+    }
+
+    .logo-container {
+      max-width: 320px;
+      height: 125px;
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-img {
+      max-height: 125px;
+      max-width: 320px;
+      object-fit: contain;
+    }
+
+    /* Recuadro de Fecha Formal */
+    .date-box {
+      border: 1.5px solid #22c55e;
+      border-radius: 4px;
+      min-width: 175px;
+      text-align: center;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .date-box-header {
+      background: #22c55e;
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 4px 10px;
+      text-transform: uppercase;
+    }
+
+    .date-box-content {
+      padding: 8px 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    /* Título del Presupuesto */
+    .doc-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #000000;
+      padding-bottom: 6px;
+      border-bottom: 1.5px solid #1e293b;
+      margin-bottom: 22px;
+      letter-spacing: 0.3px;
+    }
+
+    /* Saludo y Texto de Introducción */
+    .doc-recipient {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #1e293b;
+    }
+
+    .doc-intro {
+      font-size: 0.98rem;
+      line-height: 1.6;
+      margin-bottom: 26px;
+      color: #1e293b;
+      text-align: justify;
+    }
+
+    /* Puntos del Trabajo */
+    .doc-points {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .doc-point-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 0.96rem;
+      line-height: 1.55;
+      color: #111827;
+      text-align: justify;
+    }
+
+    .doc-point-num {
+      font-weight: 800;
+      min-width: 20px;
+      color: #000000;
+    }
+
+    /* Sección de Notas Finales */
+    .doc-notes {
+      margin-top: 10px;
+      margin-bottom: 36px;
+    }
+
+    .notes-heading {
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      color: #000000;
+    }
+
+    .notes-list {
+      list-style: disc;
+      padding-left: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 0.94rem;
+      font-weight: 700;
+    }
+
+    .notes-list li {
+      color: #000000;
+    }
+
+    .note-vat-line {
+      border-bottom: 1px solid #64748b;
+      padding-bottom: 6px;
+      display: inline-block;
+      width: 100%;
+    }
+
+    /* Cierre y Firma Alineados a la Izquierda */
+    .doc-closing {
+      margin-top: auto;
+      padding-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .closing-intro {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .closing-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #000000;
+      letter-spacing: 0.2px;
+    }
+
+    .closing-phone {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1e293b;
+      letter-spacing: 0.5px;
+    }
+
+    /* Estilos de Impresión Nativa (Ctrl+P) */
     @media print {
       body {
-        background: #ffffff !important;
+        background: white !important;
         margin: 0 !important;
-        padding: 0 !important;
       }
-      .no-print {
+      .app-nav,
+      .editor-sidebar {
         display: none !important;
+      }
+      .workspace {
+        display: block !important;
+        height: auto !important;
+      }
+      .preview-stage {
+        padding: 0 !important;
+        background: white !important;
       }
       .a4-sheet {
         box-shadow: none !important;
         margin: 0 !important;
-        padding: 16mm 20mm !important;
         width: 100% !important;
-        min-height: auto !important;
-      }
-      @page {
-        size: A4 portrait;
-        margin: 0;
+        min-height: 100% !important;
+        padding: 20mm 18mm !important;
       }
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col bg-slate-900">
+<body>
 
-  <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
-  <header class="no-print bg-slate-950/80 backdrop-blur border-b border-slate-800 sticky top-0 z-40 px-4 py-3">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-400 flex items-center justify-center text-white shadow-lg shadow-emerald-950/50">
-          <i class="fa-solid fa-file-invoice text-lg"></i>
-        </div>
-        <div>
-          <h1 class="text-base font-bold text-white tracking-wide">deKor Pintura</h1>
-          <p class="text-xs text-slate-400">Generador de Presupuestos Oficiales</p>
-        </div>
-      </div>
-
-      <!-- ACCIONES PRINCIPALES -->
-      <div class="flex items-center space-x-2 sm:space-x-3">
-        <button 
-          onclick="window.print()" 
-          class="px-3 py-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center shadow-sm"
-          title="Imprimir directamente o usar el visor del sistema">
-          <i class="fa-solid fa-print mr-2 text-slate-400"></i>
-          <span>Imprimir</span>
-        </button>
-
-        <button 
-          id="btnExportPdf"
-          onclick="handleDownloadPDF()" 
-          class="px-4 py-2 text-xs sm:text-sm font-bold rounded-lg bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white transition flex items-center shadow-md shadow-emerald-900/50">
-          <i class="fa-solid fa-file-arrow-down mr-2"></i>
-          <span>Descargar PDF</span>
-        </button>
-      </div>
+  <!-- Barra Superior -->
+  <header class="app-nav">
+    <div class="brand-title">
+      <span>deKor Pintura</span>
+      <span class="brand-badge">PRO</span>
+    </div>
+    <div class="action-buttons">
+      <button class="btn btn-secondary" onclick="window.print()">
+        🖨️ Imprimir
+      </button>
+      <button class="btn btn-primary" onclick="descargarPDF()">
+        📥 Descargar PDF
+      </button>
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL: PANEL LATERAL + VISTA PREVIA -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
-    <!-- PANEL DE CONTROL / EDICIÓN (Izquierda) -->
-    <aside class="no-print lg:col-span-5 bg-slate-950 border border-slate-800/80 rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[calc(100vh-6.5rem)] sticky top-20">
+  <!-- Espacio de Trabajo -->
+  <main class="workspace">
+    
+    <!-- Panel Izquierdo: Editor -->
+    <aside class="editor-sidebar">
       
-      <!-- Cabecera del Panel -->
-      <div class="p-4 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200">Personalizar Presupuesto</h2>
+      <!-- Fecha -->
+      <div class="section-card">
+        <div class="section-title">
+          <span>Fecha del Documento</span>
         </div>
-        <button 
-          type="button" 
-          onclick="resetToDefaults()" 
-          class="text-xs text-slate-400 hover:text-rose-400 transition flex items-center" 
-          title="Restablecer contenido">
-          <i class="fa-solid fa-rotate-left mr-1"></i> Reiniciar
-        </button>
-      </div>
-
-      <!-- Controles del Formulario -->
-      <div class="p-4 overflow-y-auto custom-scroll space-y-4 text-xs">
-        
-        <!-- SECCIÓN 1: FECHA Y CALENDARIO -->
-        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <label class="font-bold text-slate-200 flex items-center">
-              <i class="fa-regular fa-calendar-days text-emerald-400 mr-1.5 text-sm"></i>
-              Fecha del Documento
-            </label>
-            <span class="text-[10px] text-slate-400">Selector dinámico</span>
-          </div>
-          
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <!-- Selector de Calendario -->
-            <div>
-              <label class="text-[10.5px] text-slate-400 mb-1 block">Seleccionar en Calendario</label>
-              <input 
-                type="date" 
-                id="inputDatePicker" 
-                onchange="handleDateFromPicker(this.value)"
-                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none">
-            </div>
-
-            <!-- Texto Manual Formateado -->
-            <div>
-              <label class="text-[10.5px] text-slate-400 mb-1 block">Texto en Documento</label>
-              <input 
-                type="text" 
-                id="inputDateText" 
-                value="20 / junio / 2026" 
-                oninput="syncPreview()"
-                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 font-semibold focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none">
-            </div>
-          </div>
-        </div>
-
-        <!-- SECCIÓN 2: ENCABEZADO Y CLIENTE -->
-        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-3">
-          <div>
-            <label class="font-bold text-slate-200 mb-1 block flex items-center">
-              <i class="fa-solid fa-heading text-emerald-400 mr-1.5"></i>
-              Título del Presupuesto
-            </label>
-            <input 
-              type="text" 
-              id="inputTitle" 
-              value="PRESUPUESTO CALLE FRANCISCO PI Y MARGAL 23-5A MADRID" 
-              oninput="syncPreview()"
-              class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 font-bold uppercase focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <div>
-              <label class="font-bold text-slate-200 mb-1 block flex items-center">
-                <i class="fa-solid fa-user text-emerald-400 mr-1.5"></i>
-                Destinatario / Saludo
-              </label>
-              <input 
-                type="text" 
-                id="inputClient" 
-                value="Sra." 
-                placeholder="Ej: Sra. Martínez"
-                oninput="syncPreview()"
-                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-            </div>
-
-            <div>
-              <label class="font-bold text-slate-200 mb-1 block flex items-center">
-                <i class="fa-solid fa-align-left text-emerald-400 mr-1.5"></i>
-                Introducción
-              </label>
-              <textarea 
-                id="inputIntro" 
-                rows="2" 
-                oninput="syncPreview()"
-                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 focus:ring-1 focus:ring-emerald-500 focus:outline-none resize-none">El presente presupuesto atiende al resanado y pintado de dos techos de baño.</textarea>
-            </div>
-          </div>
-        </div>
-
-        <!-- SECCIÓN 3: PUNTOS DE LA OBRA -->
-        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <label class="font-bold text-slate-200 flex items-center">
-              <i class="fa-solid fa-list-check text-emerald-400 mr-1.5"></i>
-              Detalle de Trabajos (Puntos)
-            </label>
-            <button 
-              type="button" 
-              onclick="addWorkPoint()" 
-              class="px-2.5 py-1 bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 font-bold rounded-md border border-emerald-500/40 transition flex items-center text-[11px]">
-              <i class="fa-solid fa-plus mr-1"></i> Añadir Punto
+        <div class="form-group">
+          <label>Fecha en formato formal</label>
+          <div class="date-input-wrapper">
+            <input type="text" id="input-date-text" placeholder="Ej: 20 / junio / 2026" oninput="actualizarVista()">
+            <!-- Input fecha oculto para el picker -->
+            <input type="date" id="native-datepicker" style="position: absolute; opacity: 0; pointer-events: none;" onchange="alElegirFecha(this.value)">
+            <button class="btn-calendar" title="Abrir Calendario" onclick="abrirCalendario()">
+              📅
             </button>
           </div>
-
-          <div id="pointsListControls" class="space-y-2">
-            <!-- Puntos dinámicos generados por JS -->
-          </div>
         </div>
-
-        <!-- SECCIÓN 4: COSTO FINAL Y NOTAS -->
-        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-3">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <div>
-              <label class="font-bold text-slate-200 mb-1 block flex items-center">
-                <i class="fa-solid fa-euro-sign text-emerald-400 mr-1.5"></i>
-                Costo Total
-              </label>
-              <input 
-                type="text" 
-                id="inputCost" 
-                value="290€ (EUROS)" 
-                oninput="syncPreview()"
-                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 font-bold focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-            </div>
-
-            <div>
-              <label class="font-bold text-slate-200 mb-1 block flex items-center">
-                <i class="fa-solid fa-receipt text-emerald-400 mr-1.5"></i>
-                Condición IVA
-              </label>
-              <input 
-                type="text" 
-                id="inputIva" 
-                value="LA PLANIFICACIÓN DEL PRESUPUESTO NO TENDRÁ IVA INCLUIDO." 
-                oninput="syncPreview()"
-                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-            </div>
-          </div>
-        </div>
-
-        <!-- SECCIÓN 5: DESPEDIDA Y RESPONSABLE (ALINEADO A LA IZQUIERDA) -->
-        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-3">
-          <div>
-            <label class="font-bold text-slate-200 mb-1 block flex items-center">
-              <i class="fa-regular fa-comment-dots text-emerald-400 mr-1.5"></i>
-              Frase de Despedida
-            </label>
-            <input 
-              type="text" 
-              id="inputFarewell" 
-              value="DEKORA espera su pronta respuesta por:" 
-              oninput="syncPreview()"
-              class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <div>
-              <label class="font-bold text-slate-200 mb-1 block flex items-center">
-                <i class="fa-solid fa-id-card text-emerald-400 mr-1.5"></i>
-                Nombre del Profesional
-              </label>
-              <input 
-                type="text" 
-                id="inputResponsible" 
-                value="Jimmy González" 
-                oninput="syncPreview()"
-                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 font-bold focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-            </div>
-
-            <div>
-              <label class="font-bold text-slate-200 mb-1 block flex items-center">
-                <i class="fa-solid fa-phone text-emerald-400 mr-1.5"></i>
-                Teléfono de Contacto
-              </label>
-              <input 
-                type="text" 
-                id="inputPhone" 
-                value="685665811" 
-                oninput="syncPreview()"
-                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 font-bold tracking-wider focus:ring-1 focus:ring-emerald-500 focus:outline-none">
-            </div>
-          </div>
-        </div>
-
       </div>
+
+      <!-- Encabezado y Destinatario -->
+      <div class="section-card">
+        <div class="section-title">Encabezado y Saludo</div>
+        <div class="form-group">
+          <label>Título del Presupuesto (Subrayado)</label>
+          <input type="text" id="input-title" value="PRESUPUESTO CALLE FRANCISCO PI Y MARGAL 23-5A MADRID" oninput="actualizarVista()">
+        </div>
+        <div class="form-group">
+          <label>Destinatario / Saludo</label>
+          <input type="text" id="input-recipient" value="Sra." oninput="actualizarVista()">
+        </div>
+        <div class="form-group">
+          <label>Texto Introductorio</label>
+          <textarea id="input-intro" rows="2" oninput="actualizarVista()">El presente presupuesto atiende al resanado y pintado de dos techos de baño.</textarea>
+        </div>
+      </div>
+
+      <!-- Puntos de Trabajo -->
+      <div class="section-card">
+        <div class="section-title">
+          <span>Puntos del Presupuesto</span>
+        </div>
+        <div class="items-container" id="items-list-inputs">
+          <!-- Se cargan dinámicamente -->
+        </div>
+        <button class="btn-add-item" onclick="agregarNuevoPunto()">+ Añadir Nuevo Punto</button>
+      </div>
+
+      <!-- Notas Finales e Importe -->
+      <div class="section-card">
+        <div class="section-title">Importe y Condiciones</div>
+        <div class="form-group">
+          <label>Costo Total (Euros)</label>
+          <input type="text" id="input-cost" value="290€ (EUROS)" oninput="actualizarVista()">
+        </div>
+        <div class="form-group">
+          <label>Condición de Impuestos (IVA)</label>
+          <input type="text" id="input-vat" value="LA PLANIFICACIÓN DEL PRESUPUESTO NO TENDRÁ IVA INCLUIDO." oninput="actualizarVista()">
+        </div>
+      </div>
+
+      <!-- Datos de Firma y Despedida -->
+      <div class="section-card">
+        <div class="section-title">Firma y Contacto</div>
+        <div class="form-group">
+          <label>Frase de Despedida</label>
+          <input type="text" id="input-closing-intro" value="DEKORA espera su pronta respuesta por:" oninput="actualizarVista()">
+        </div>
+        <div class="form-group">
+          <label>Nombre del Profesional</label>
+          <input type="text" id="input-closing-name" value="Jimmy González" oninput="actualizarVista()">
+        </div>
+        <div class="form-group">
+          <label>Teléfono de Contacto</label>
+          <input type="text" id="input-closing-phone" value="685665811" oninput="actualizarVista()">
+        </div>
+      </div>
+
     </aside>
 
-    <!-- ÁREA DE VISTA PREVIA DEL DOCUMENTO A4 (Derecha) -->
-    <section class="lg:col-span-7 flex flex-col items-center justify-start w-full overflow-x-auto pb-8">
-      
-      <div class="no-print w-full max-w-[210mm] flex items-center justify-between mb-2 text-xs text-slate-400 px-1">
-        <span class="flex items-center font-medium">
-          <i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> Vista Previa A4 (Escala 100%)
-        </span>
-        <span>Ajustado para descarga en PDF o impresión</span>
-      </div>
-
-      <!-- HOJA A4 IMPRIMIBLE -->
-      <div id="documentSheet" class="a4-sheet">
-
-        <!-- ENCABEZADO: LOGOTIPO GRANDE + CAJA DE FECHA ELEGANTE -->
-        <header class="flex items-start justify-between mb-7">
-          
-          <!-- Contenedor del Logo (Grande y protagonista) -->
-          <div class="max-w-[290px] flex items-center">
-            <img 
-              id="brandLogo" 
-              src="logo.png" 
-              alt="deKor Pintura" 
-              onerror="handleLogoError(this)" 
-              class="h-[110px] w-auto max-w-[290px] object-contain block drop-shadow-sm transition-all" />
+    <!-- Panel Derecho: Hoja A4 Profesional -->
+    <section class="preview-stage">
+      <div class="a4-sheet" id="sheet-to-pdf">
+        
+        <!-- Cabecera: Logo Grande + Fecha -->
+        <header class="doc-header">
+          <div class="logo-container">
+            <img src="logo.png" id="doc-logo-img" class="logo-img" alt="deKor Pintura" onerror="crearLogoRespaldo(this)">
           </div>
-
-          <!-- Caja de Fecha Refinada y Corporativa -->
-          <div class="pt-1">
-            <div class="fecha-card">
-              <div class="fecha-card-header">
-                FECHA
-              </div>
-              <div id="viewDate" class="fecha-card-body">
-                20 / junio / 2026
-              </div>
-            </div>
+          <div class="date-box">
+            <div class="date-box-header">FECHA</div>
+            <div class="date-box-content" id="view-date">20 / junio / 2026</div>
           </div>
-
         </header>
 
-        <!-- TÍTULO PRINCIPAL SUBRAYADO -->
-        <div class="mb-5 mt-1">
-          <h2 id="viewTitle" class="text-[17px] font-bold text-black uppercase tracking-wide border-rule pb-1.5 leading-snug">
-            PRESUPUESTO CALLE FRANCISCO PI Y MARGAL 23-5A MADRID
-          </h2>
+        <!-- Título -->
+        <h1 class="doc-title" id="view-title">PRESUPUESTO CALLE FRANCISCO PI Y MARGAL 23-5A MADRID</h1>
+
+        <!-- Saludo -->
+        <div class="doc-recipient" id="view-recipient">Sra.</div>
+
+        <!-- Introducción -->
+        <div class="doc-intro" id="view-intro">
+          El presente presupuesto atiende al resanado y pintado de dos techos de baño.
         </div>
 
-        <!-- DESTINATARIO -->
-        <div class="mb-5">
-          <p id="viewClient" class="text-[15px] font-medium text-black">
-            Sra.
-          </p>
+        <!-- Lista Numerada de Trabajos -->
+        <ol class="doc-points" id="view-points-list">
+          <!-- Inyectado por JS -->
+        </ol>
+
+        <!-- Notas Finales -->
+        <div class="doc-notes">
+          <div class="notes-heading">NOTA:</div>
+          <ul class="notes-list">
+            <li>
+              <span>EL COSTO TOTAL DE LA OBRA ES DE </span><span id="view-cost">290€ (EUROS)</span>
+            </li>
+            <li>
+              <span class="note-vat-line" id="view-vat">LA PLANIFICACIÓN DEL PRESUPUESTO NO TENDRÁ IVA INCLUIDO.</span>
+            </li>
+          </ul>
         </div>
 
-        <!-- TEXTO INTRODUCTORIO -->
-        <div class="mb-6">
-          <p id="viewIntro" class="text-[15px] text-black leading-relaxed">
-            El presente presupuesto atiende al resanado y pintado de dos techos de baño.
-          </p>
-        </div>
-
-        <!-- LISTA NUMERADA DE TRABAJOS -->
-        <div id="viewPointsList" class="space-y-4 mb-8 text-[15px] text-black leading-relaxed">
-          <!-- Renderizado dinámicamente -->
-        </div>
-
-        <!-- SECCIÓN NOTAS Y COSTOS -->
-        <div class="mb-8">
-          <h3 class="font-bold text-[15px] text-black uppercase mb-3 tracking-wide">
-            NOTA:
-          </h3>
-          <div class="space-y-3.5 pl-2 text-[14.5px] text-black">
-            <!-- Costo Total -->
-            <div class="flex items-start font-bold">
-              <span class="mr-3 text-lg leading-none select-none text-black">•</span>
-              <p>EL COSTO TOTAL DE LA OBRA ES DE <span id="viewCost" class="font-extrabold">290€ (EUROS)</span></p>
-            </div>
-            <!-- Condición IVA con línea de cierre -->
-            <div class="flex items-start font-bold border-rule pb-2">
-              <span class="mr-3 text-lg leading-none select-none text-black">•</span>
-              <p id="viewIva" class="tracking-wide">LA PLANIFICACIÓN DEL PRESUPUESTO NO TENDRÁ IVA INCLUIDO.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- PIE DE PÁGINA: DESPEDIDA Y RESPONSABLE (ALINEADO A LA IZQUIERDA) -->
-        <footer class="mt-auto pt-6 pb-2 text-[15px] text-black">
-          <div class="space-y-1.5 text-left">
-            <p id="viewFarewell" class="text-[14.5px] text-slate-900 font-normal">
-              DEKORA espera su pronta respuesta por:
-            </p>
-            <div class="flex items-baseline space-x-5 pt-1">
-              <span id="viewResponsible" class="font-bold text-[15.5px] text-black">
-                Jimmy González
-              </span>
-              <span id="viewPhone" class="font-bold text-[15.5px] tracking-wider text-black">
-                685665811
-              </span>
-            </div>
-          </div>
+        <!-- Firma y Despedida (Todo ordenado a la izquierda) -->
+        <footer class="doc-closing">
+          <div class="closing-intro" id="view-closing-intro">DEKORA espera su pronta respuesta por:</div>
+          <div class="closing-name" id="view-closing-name">Jimmy González</div>
+          <div class="closing-phone" id="view-closing-phone">685665811</div>
         </footer>
 
       </div>
@@ -454,19 +646,9 @@
 
   </main>
 
-  <!-- NOTIFICACIÓN TOAST INFORMATIVO -->
-  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
-    <div class="bg-slate-950 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 border border-slate-700">
-      <div id="toastStatusIcon" class="text-emerald-400 text-lg">
-        <i class="fa-solid fa-circle-check"></i>
-      </div>
-      <p id="toastMessage" class="text-xs sm:text-sm font-semibold text-slate-200">Operación exitosa</p>
-    </div>
-  </div>
-
   <script>
-    /* Lista de trabajos por defecto */
-    const defaultPoints = [
+    // Lista inicial de puntos
+    let puntosTrabajo = [
       "En primer lugar se tapara el suelo y las paredes del los baños con papel y plástico para evitar mancharlo con pintura.",
       "Se raspará las zonas afectadas,para eliminar la pintura muerta de los techos. ( Desconchones )",
       "Se resanará las zonas afectadas, aplicándole dos manos de Aguaplast.",
@@ -475,247 +657,159 @@
       "Se recogerá todo el material inservible para ser depositado en los tachos de basura correspondiente."
     ];
 
-    let currentPoints = [...defaultPoints];
+    // Inicializar fecha actual en formato formal español (DD / mes / AAAA)
+    function inicializarFechaActual() {
+      const meses = [
+        "enero", "febrero", "marzo", "abril", "mayo", "junio",
+        "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+      ];
+      const hoy = new Date();
+      const dia = String(hoy.getDate()).padStart(2, '0');
+      const mes = meses[hoy.getMonth()];
+      const anio = hoy.getFullYear();
 
-    /* Fallback en formato SVG idéntico al logo original con el pintor y salpicadura si logo.png aún no existe */
-    function handleLogoError(imgElement) {
-      imgElement.onerror = null;
-      imgElement.src = "data:image/svg+xml;utf8," + encodeURIComponent(`
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 140" width="450" height="140">
-          <!-- deKor Pintura Vector Fallback -->
-          <g transform="translate(10, 15)">
-            <!-- Bote y salpicadura -->
-            <path d="M15 85 C10 65, 30 40, 45 45 C55 30, 75 35, 70 55 C85 50, 95 70, 75 85 Z" fill="#e11d48"/>
-            <path d="M40 50 C55 35, 75 30, 80 50 C95 40, 105 60, 90 75 Z" fill="#0284c7"/>
-            <path d="M25 70 C35 55, 55 50, 60 70 Z" fill="#facc15"/>
-            <path d="M55 65 C65 50, 85 55, 80 75 Z" fill="#16a34a"/>
-            <!-- Bote -->
-            <path d="M25 80 L30 110 L60 110 L65 80 Z" fill="#cbd5e1" stroke="#475569" stroke-width="2"/>
-            <ellipse cx="45" cy="80" rx="20" ry="5" fill="#94a3b8"/>
-            
-            <!-- Texto 'deKor' -->
-            <text x="85" y="65" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="52" fill="#000000">de</text>
-            <text x="145" y="65" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="52" fill="#16a34a">K</text>
-            <text x="180" y="65" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="52" fill="#000000">or</text>
-            
-            <!-- Texto 'PINTURA' -->
-            <text x="145" y="92" font-family="'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="24" letter-spacing="3" fill="#1e293b">PINTURA</text>
-            
-            <!-- Insignia del pintor -->
-            <g transform="translate(290, -5)">
-              <circle cx="50" cy="50" r="44" fill="#0284c7" fill-opacity="0.12" stroke="#0284c7" stroke-width="3"/>
-              <!-- Figura simplificada del pintor -->
-              <circle cx="50" cy="38" r="16" fill="#fbcfe8"/>
-              <path d="M36 28 Q50 18 64 28" fill="#ffffff" stroke="#0284c7" stroke-width="3"/>
-              <path d="M30 65 Q50 55 70 65 L68 90 L32 90 Z" fill="#0284c7"/>
-              <rect x="40" y="60" width="20" height="24" fill="#ffffff" rx="2"/>
-              <!-- Brocha -->
-              <line x1="68" y1="50" x2="84" y2="35" stroke="#78350f" stroke-width="4" stroke-linecap="round"/>
-              <rect x="80" y="28" width="10" height="12" fill="#94a3b8" rx="1"/>
-              <path d="M80 28 Q85 20 90 28" fill="#e11d48"/>
-            </g>
-          </g>
-        </svg>
-      `);
+      const fechaTexto = `${dia} / ${mes} / ${anio}`;
+      document.getElementById('input-date-text').value = fechaTexto;
+      document.getElementById('view-date').textContent = fechaTexto;
     }
 
-    /* Manejo del Calendario dinámico con conversión a formato español */
-    function handleDateFromPicker(dateString) {
-      if (!dateString) return;
-      
-      const parts = dateString.split('-');
-      if (parts.length === 3) {
-        const year = parts[0];
-        const monthIndex = parseInt(parts[1], 10) - 1;
-        const day = parseInt(parts[2], 10);
-        
-        const monthNames = [
-          "enero", "febrero", "marzo", "abril", "mayo", "junio",
-          "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
-        ];
-        
-        const formatted = `${day} / ${monthNames[monthIndex]} / ${year}`;
-        document.getElementById('inputDateText').value = formatted;
-        syncPreview();
+    // Abrir selector nativo de calendario
+    function abrirCalendario() {
+      const picker = document.getElementById('native-datepicker');
+      if (picker.showPicker) {
+        picker.showPicker();
+      } else {
+        picker.click();
       }
     }
 
-    /* Renderizado de controles interactivos para los puntos */
-    function renderPointsControls() {
-      const wrapper = document.getElementById('pointsListControls');
-      wrapper.innerHTML = '';
+    // Cuando el usuario selecciona una fecha en el calendario
+    function alElegirFecha(fechaISO) {
+      if (!fechaISO) return;
+      const partes = fechaISO.split('-');
+      const meses = [
+        "enero", "febrero", "marzo", "abril", "mayo", "junio",
+        "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+      ];
+      const dia = partes[2];
+      const mes = meses[parseInt(partes[1], 10) - 1];
+      const anio = partes[0];
 
-      currentPoints.forEach((point, index) => {
-        const item = document.createElement('div');
-        item.className = "flex items-start space-x-2 bg-slate-950 p-2 rounded-lg border border-slate-800";
-        item.innerHTML = `
-          <span class="font-bold text-slate-400 text-xs mt-2 w-5 text-right flex-shrink-0">${index + 1}.</span>
-          <textarea 
-            rows="2" 
-            class="flex-1 px-2.5 py-1.5 text-xs bg-slate-900 border border-slate-700 rounded-md focus:ring-1 focus:ring-emerald-500 focus:outline-none text-slate-200 resize-none leading-relaxed"
-            oninput="updateSinglePoint(${index}, this.value)">${point}</textarea>
-          <button 
-            type="button" 
-            onclick="removeWorkPoint(${index})" 
-            title="Eliminar punto"
-            class="text-slate-400 hover:text-rose-400 p-1.5 rounded-md hover:bg-slate-800 transition">
-            <i class="fa-solid fa-trash-can text-xs"></i>
-          </button>
-        `;
-        wrapper.appendChild(item);
-      });
-
-      renderPointsPreview();
+      const resultado = `${dia} / ${mes} / ${anio}`;
+      document.getElementById('input-date-text').value = resultado;
+      document.getElementById('view-date').textContent = resultado;
     }
 
-    function updateSinglePoint(index, value) {
-      currentPoints[index] = value;
-      renderPointsPreview();
-    }
-
-    function addWorkPoint() {
-      currentPoints.push("Nuevo trabajo a especificar...");
-      renderPointsControls();
-      displayToast("Nuevo punto añadido");
-    }
-
-    function removeWorkPoint(index) {
-      if (currentPoints.length <= 1) {
-        displayToast("Debe haber al menos 1 punto en el presupuesto", true);
-        return;
-      }
-      currentPoints.splice(index, 1);
-      renderPointsControls();
-      displayToast("Punto eliminado");
-    }
-
-    function renderPointsPreview() {
-      const container = document.getElementById('viewPointsList');
+    // Renderizar inputs del panel izquierdo
+    function renderizarInputsPuntos() {
+      const container = document.getElementById('items-list-inputs');
       container.innerHTML = '';
 
-      currentPoints.forEach((point, index) => {
+      puntosTrabajo.forEach((punto, index) => {
         const row = document.createElement('div');
-        row.className = "flex items-start space-x-4 pl-1";
+        row.className = 'item-row';
         row.innerHTML = `
-          <span class="font-bold text-[15px] min-w-[22px] text-right text-black">${index + 1}.</span>
-          <p class="flex-1 text-[15px] leading-relaxed text-black">${point}</p>
+          <span class="item-num">${index + 1}.</span>
+          <textarea oninput="actualizarTextoPunto(${index}, this.value)">${punto}</textarea>
+          <button class="btn-del-item" title="Eliminar este punto" onclick="eliminarPunto(${index})">✕</button>
         `;
         container.appendChild(row);
       });
+
+      renderizarPuntosEnDocumento();
     }
 
-    /* Sincronización en tiempo real de todos los campos */
-    function syncPreview() {
-      // 1. Fecha
-      document.getElementById('viewDate').innerText = document.getElementById('inputDateText').value || 'Sin fecha';
+    // Renderizar lista en la hoja A4
+    function renderizarPuntosEnDocumento() {
+      const listaDoc = document.getElementById('view-points-list');
+      listaDoc.innerHTML = '';
 
-      // 2. Título
-      document.getElementById('viewTitle').innerText = document.getElementById('inputTitle').value || 'PRESUPUESTO';
-
-      // 3. Cliente
-      document.getElementById('viewClient').innerText = document.getElementById('inputClient').value || '';
-
-      // 4. Introducción
-      document.getElementById('viewIntro').innerText = document.getElementById('inputIntro').value || '';
-
-      // 5. Costo e IVA
-      document.getElementById('viewCost').innerText = document.getElementById('inputCost').value || '';
-      document.getElementById('viewIva').innerText = document.getElementById('inputIva').value || '';
-
-      // 6. Despedida y Responsable (Alineación a la izquierda completa)
-      document.getElementById('viewFarewell').innerText = document.getElementById('inputFarewell').value || '';
-      document.getElementById('viewResponsible').innerText = document.getElementById('inputResponsible').value || '';
-      document.getElementById('viewPhone').innerText = document.getElementById('inputPhone').value || '';
-    }
-
-    function resetToDefaults() {
-      document.getElementById('inputDateText').value = "20 / junio / 2026";
-      document.getElementById('inputDatePicker').value = "";
-      document.getElementById('inputTitle').value = "PRESUPUESTO CALLE FRANCISCO PI Y MARGAL 23-5A MADRID";
-      document.getElementById('inputClient').value = "Sra.";
-      document.getElementById('inputIntro').value = "El presente presupuesto atiende al resanado y pintado de dos techos de baño.";
-      document.getElementById('inputCost').value = "290€ (EUROS)";
-      document.getElementById('inputIva').value = "LA PLANIFICACIÓN DEL PRESUPUESTO NO TENDRÁ IVA INCLUIDO.";
-      document.getElementById('inputFarewell').value = "DEKORA espera su pronta respuesta por:";
-      document.getElementById('inputResponsible').value = "Jimmy González";
-      document.getElementById('inputPhone').value = "685665811";
-
-      currentPoints = [...defaultPoints];
-      renderPointsControls();
-      syncPreview();
-      displayToast("Formulario restablecido a valores iniciales");
-    }
-
-    /* Exportación robusta a PDF */
-    function handleDownloadPDF() {
-      const sheet = document.getElementById('documentSheet');
-      const btn = document.getElementById('btnExportPdf');
-      const originalText = btn.innerHTML;
-
-      btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Generando PDF...`;
-      btn.disabled = true;
-
-      const titleVal = document.getElementById('inputTitle').value || 'presupuesto';
-      const cleanName = titleVal.toLowerCase().replace(/[^a-z0-9]/gi, '_').substring(0, 32);
-      const filename = `Presupuesto_${cleanName}.pdf`;
-
-      const options = {
-        margin: [0, 0, 0, 0],
-        filename: filename,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          letterRendering: true,
-          scrollY: 0,
-          windowWidth: 1024
-        },
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'portrait'
-        }
-      };
-
-      html2pdf().set(options).from(sheet).save().then(() => {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        displayToast("¡PDF generado y descargado correctamente!");
-      }).catch((error) => {
-        console.error("Error al generar PDF:", error);
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        // Si el navegador bloquea la descarga por iframe, se ofrece la opción de imprimir
-        window.print();
-        displayToast("Se ha abierto la ventana de impresión para guardar el PDF");
+      puntosTrabajo.forEach((punto, index) => {
+        const li = document.createElement('li');
+        li.className = 'doc-point-item';
+        li.innerHTML = `
+          <span class="doc-point-num">${index + 1}.</span>
+          <span>${punto}</span>
+        `;
+        listaDoc.appendChild(li);
       });
     }
 
-    function displayToast(msg, isError = false) {
-      const toast = document.getElementById('toastNotification');
-      const text = document.getElementById('toastMessage');
-      const icon = document.getElementById('toastStatusIcon');
-
-      text.innerText = msg;
-      if (isError) {
-        icon.innerHTML = `<i class="fa-solid fa-circle-exclamation text-rose-400"></i>`;
-      } else {
-        icon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
-      }
-
-      toast.classList.remove('translate-y-24', 'opacity-0');
-      toast.classList.add('translate-y-0', 'opacity-100');
-
-      setTimeout(() => {
-        toast.classList.remove('translate-y-0', 'opacity-100');
-        toast.classList.add('translate-y-24', 'opacity-0');
-      }, 3200);
+    function actualizarTextoPunto(index, texto) {
+      puntosTrabajo[index] = texto;
+      renderizarPuntosEnDocumento();
     }
 
-    // Inicialización al cargar la página
+    function agregarNuevoPunto() {
+      puntosTrabajo.push("Nuevo trabajo a especificar...");
+      renderizarInputsPuntos();
+    }
+
+    function eliminarPunto(index) {
+      if (puntosTrabajo.length <= 1) {
+        alert("Debe quedar al menos un punto en el presupuesto.");
+        return;
+      }
+      puntosTrabajo.splice(index, 1);
+      renderizarInputsPuntos();
+    }
+
+    // Sincronizar todos los campos de texto con la hoja de presupuesto
+    function actualizarVista() {
+      document.getElementById('view-date').textContent = document.getElementById('input-date-text').value;
+      document.getElementById('view-title').textContent = document.getElementById('input-title').value;
+      document.getElementById('view-recipient').textContent = document.getElementById('input-recipient').value;
+      document.getElementById('view-intro').textContent = document.getElementById('input-intro').value;
+      document.getElementById('view-cost').textContent = document.getElementById('input-cost').value;
+      document.getElementById('view-vat').textContent = document.getElementById('input-vat').value;
+      document.getElementById('view-closing-intro').textContent = document.getElementById('input-closing-intro').value;
+      document.getElementById('view-closing-name').textContent = document.getElementById('input-closing-name').value;
+      document.getElementById('view-closing-phone').textContent = document.getElementById('input-closing-phone').value;
+    }
+
+    // Generar logotipo vectorial en caso de que aún no exista logo.png en la raíz
+    function crearLogoRespaldo(imgElement) {
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" width="300" height="110">
+          <circle cx="50" cy="55" r="42" fill="#e0f2fe" stroke="#0284c7" stroke-width="3"/>
+          <path d="M35 55 Q50 35 65 55 T95 55" fill="none" stroke="#22c55e" stroke-width="4"/>
+          <text x="32" y="65" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="28" fill="#0f172a">de<tspan fill="#22c55e">K</tspan>or</text>
+          <text x="32" y="90" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="14" letter-spacing="4" fill="#334155">PINTURA</text>
+        </svg>
+      `;
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      imgElement.src = URL.createObjectURL(blob);
+    }
+
+    // Descarga directa a archivo PDF oficial
+    function descargarPDF() {
+      const elemento = document.getElementById('sheet-to-pdf');
+      
+      const opciones = {
+        margin: 0,
+        filename: 'Presupuesto_deKor.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true, 
+          letterRendering: true,
+          scrollY: 0
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait' 
+        }
+      };
+
+      html2pdf().set(opciones).from(elemento).save();
+    }
+
+    // Arranque inicial
     window.addEventListener('DOMContentLoaded', () => {
-      renderPointsControls();
-      syncPreview();
+      inicializarFechaActual();
+      renderizarInputsPuntos();
+      actualizarVista();
     });
   </script>
 </body>
