@@ -9,82 +9,98 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <!-- html2pdf.js CDN -->
+  <!-- html2pdf.js CDN para generación de PDF de alta resolución -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Segoe+UI:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap');
 
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background-color: #f1f5f9;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #0f172a;
+      color: #334155;
     }
 
-    /* Estructura A4 exacta para vista previa y renderizado PDF */
-    .a4-page {
+    /* Medidas exactas de hoja A4 (210mm x 297mm) con escala real */
+    .a4-sheet {
       width: 210mm;
       min-height: 297mm;
-      padding: 18mm 20mm 16mm 20mm;
+      padding: 18mm 22mm 18mm 22mm;
       margin: 0 auto;
       background: #ffffff;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
       box-sizing: border-box;
-      font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
-      color: #0f172a;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+      position: relative;
       display: flex;
       flex-direction: column;
-      position: relative;
+      color: #111827;
+      line-height: 1.5;
     }
 
-    /* Cuadro de Fecha estilo original */
-    .fecha-badge {
-      border: 1.5px solid #84cc16; /* Color verde lima característico */
-      width: 175px;
+    /* Caja de Fecha Premium con identidad corporativa */
+    .fecha-card {
+      border: 1.5px solid #16a34a;
+      border-radius: 6px;
+      overflow: hidden;
+      width: 190px;
+      background: #ffffff;
+      box-shadow: 0 2px 5px rgba(22, 163, 74, 0.08);
+    }
+
+    .fecha-card-header {
+      background: #16a34a;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
       text-align: center;
+      padding: 4px 8px;
+    }
+
+    .fecha-card-body {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #1e293b;
+      text-align: center;
+      padding: 6px 8px;
       background: #ffffff;
     }
 
-    .fecha-badge-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #1f2937;
-      padding: 3px 6px;
-      letter-spacing: 0.5px;
-      border-bottom: 1.5px solid #84cc16;
+    /* Subrayado continuo y limpio para título y condiciones */
+    .border-rule {
+      border-bottom: 1.5px solid #0f172a;
     }
 
-    .fecha-badge-val {
-      font-size: 13px;
-      padding: 4px 6px;
-      color: #111827;
-      font-weight: 500;
-    }
-
-    /* Scrollbar personalizada para el panel de configuración */
-    .sidebar-scroll::-webkit-scrollbar {
+    /* Personalización del scrollbar en panel lateral */
+    .custom-scroll::-webkit-scrollbar {
       width: 6px;
     }
-    .sidebar-scroll::-webkit-scrollbar-track {
-      background: #f8fafc;
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #1e293b;
     }
-    .sidebar-scroll::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #334155;
       border-radius: 9999px;
     }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
 
+    /* Reglas para impresión física o Guardar como PDF del navegador */
     @media print {
       body {
-        background: transparent !important;
-        padding: 0 !important;
+        background: #ffffff !important;
         margin: 0 !important;
+        padding: 0 !important;
       }
       .no-print {
         display: none !important;
       }
-      .a4-page {
+      .a4-sheet {
         box-shadow: none !important;
         margin: 0 !important;
-        padding: 16mm 18mm !important;
+        padding: 16mm 20mm !important;
         width: 100% !important;
         min-height: auto !important;
       }
@@ -95,44 +111,35 @@
     }
   </style>
 </head>
-<body class="min-h-screen text-slate-800 antialiased flex flex-col">
+<body class="min-h-screen flex flex-col bg-slate-900">
 
-  <header class="no-print bg-slate-900 text-white shadow-md sticky top-0 z-50">
-    <div class="max-w-[1720px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+  <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+  <header class="no-print bg-slate-950/80 backdrop-blur border-b border-slate-800 sticky top-0 z-40 px-4 py-3">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <div class="w-9 h-9 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow font-bold text-lg">
-          <i class="fa-solid fa-file-invoice"></i>
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-400 flex items-center justify-center text-white shadow-lg shadow-emerald-950/50">
+          <i class="fa-solid fa-file-invoice text-lg"></i>
         </div>
         <div>
-          <h1 class="text-sm sm:text-base font-bold tracking-tight text-white leading-tight">
-            deKor Pintura · Generador de Presupuesto
-          </h1>
-          <p class="text-[11px] text-slate-400">Plantilla vinculada a logo.png en la raíz</p>
+          <h1 class="text-base font-bold text-white tracking-wide">deKor Pintura</h1>
+          <p class="text-xs text-slate-400">Generador de Presupuestos Oficiales</p>
         </div>
       </div>
 
+      <!-- ACCIONES PRINCIPALES -->
       <div class="flex items-center space-x-2 sm:space-x-3">
         <button 
-          id="btnToggleSidebar"
-          onclick="toggleSidebar()"
-          class="inline-flex items-center px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition"
-          title="Mostrar u ocultar formulario">
-          <i class="fa-solid fa-sliders mr-1.5"></i>
-          <span class="hidden md:inline">Panel</span>
-        </button>
-
-        <button 
           onclick="window.print()" 
-          class="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition"
-          title="Imprimir directamente desde navegador">
-          <i class="fa-solid fa-print mr-1.5"></i>
-          <span class="hidden sm:inline">Imprimir</span>
+          class="px-3 py-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center shadow-sm"
+          title="Imprimir directamente o usar el visor del sistema">
+          <i class="fa-solid fa-print mr-2 text-slate-400"></i>
+          <span>Imprimir</span>
         </button>
 
         <button 
-          id="btnDownloadPdf"
-          onclick="generatePDF()"
-          class="inline-flex items-center px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-950/30 active:scale-95 transition">
+          id="btnExportPdf"
+          onclick="handleDownloadPDF()" 
+          class="px-4 py-2 text-xs sm:text-sm font-bold rounded-lg bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white transition flex items-center shadow-md shadow-emerald-900/50">
           <i class="fa-solid fa-file-arrow-down mr-2"></i>
           <span>Descargar PDF</span>
         </button>
@@ -140,162 +147,199 @@
     </div>
   </header>
 
-  <main class="flex-1 max-w-[1720px] w-full mx-auto p-3 sm:p-5 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-    
-    <!-- PANEL DE EDICIÓN (Columna Izquierda) -->
-    <aside id="sidebarPanel" class="no-print lg:col-span-5 xl:col-span-4 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col max-h-[calc(100vh-5.5rem)] lg:sticky lg:top-20">
+  <!-- CONTENIDO PRINCIPAL: PANEL LATERAL + VISTA PREVIA -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+    <!-- PANEL DE CONTROL / EDICIÓN (Izquierda) -->
+    <aside class="no-print lg:col-span-5 bg-slate-950 border border-slate-800/80 rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[calc(100vh-6.5rem)] sticky top-20">
       
-      <div class="p-4 border-b border-slate-100 bg-slate-50/75 flex items-center justify-between">
+      <!-- Cabecera del Panel -->
+      <div class="p-4 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
         <div class="flex items-center space-x-2">
-          <i class="fa-solid fa-pen-to-square text-emerald-600 text-sm"></i>
-          <h2 class="text-xs sm:text-sm font-bold text-slate-800 uppercase tracking-wide">Datos del Presupuesto</h2>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200">Personalizar Presupuesto</h2>
         </div>
         <button 
-          type="button"
-          onclick="resetAllFields()" 
-          class="text-xs text-slate-400 hover:text-rose-600 flex items-center transition"
-          title="Restablecer contenido predeterminado">
+          type="button" 
+          onclick="resetToDefaults()" 
+          class="text-xs text-slate-400 hover:text-rose-400 transition flex items-center" 
+          title="Restablecer contenido">
           <i class="fa-solid fa-rotate-left mr-1"></i> Reiniciar
         </button>
       </div>
 
-      <div class="p-4 overflow-y-auto sidebar-scroll space-y-4 text-xs">
+      <!-- Controles del Formulario -->
+      <div class="p-4 overflow-y-auto custom-scroll space-y-4 text-xs">
         
-        <!-- AVISO INFORMATIVO SOBRE LOGO.PNG -->
-        <div class="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start space-x-2.5">
-          <i class="fa-solid fa-circle-info text-emerald-600 mt-0.5 text-xs"></i>
-          <p class="text-[11.5px] text-emerald-800 leading-snug">
-            <strong>Logo fijado:</strong> El presupuesto carga automáticamente el archivo <code class="bg-white/80 px-1 py-0.5 rounded font-mono text-emerald-900 border border-emerald-300">logo.png</code> ubicado en la raíz de tu proyecto en GitHub.
-          </p>
-        </div>
-
-        <!-- 1. FECHA Y CLIENTE -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-3 border-b border-slate-100">
-          <div>
-            <label class="block font-bold text-slate-700 mb-1" for="fieldDate">
-              <i class="fa-regular fa-calendar text-slate-400 mr-1"></i>Fecha
-            </label>
-            <input 
-              type="text" 
-              id="fieldDate" 
-              value="20 / junio / 2026" 
-              oninput="updateDocumentPreview()"
-              class="w-full px-2.5 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-800 font-medium">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 mb-1" for="fieldClient">
-              <i class="fa-solid fa-user text-slate-400 mr-1"></i>Cliente / Saludo
-            </label>
-            <input 
-              type="text" 
-              id="fieldClient" 
-              value="Sra." 
-              placeholder="Ej: Sra. García" 
-              oninput="updateDocumentPreview()"
-              class="w-full px-2.5 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-800">
-          </div>
-        </div>
-
-        <!-- 2. TÍTULO Y TEXTO INTRODUCTORIO -->
-        <div class="space-y-3 pb-3 border-b border-slate-100">
-          <div>
-            <label class="block font-bold text-slate-700 mb-1" for="fieldTitle">
-              <i class="fa-solid fa-heading text-slate-400 mr-1"></i>Título del Presupuesto
-            </label>
-            <input 
-              type="text" 
-              id="fieldTitle" 
-              value="PRESUPUESTO CALLE FRANCISCO PI Y MARGAL 23-5A MADRID" 
-              oninput="updateDocumentPreview()"
-              class="w-full px-2.5 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-800 font-bold uppercase">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 mb-1" for="fieldIntro">
-              <i class="fa-solid fa-align-left text-slate-400 mr-1"></i>Texto de Introducción
-            </label>
-            <textarea 
-              id="fieldIntro" 
-              rows="2" 
-              oninput="updateDocumentPreview()"
-              class="w-full px-2.5 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-800 resize-none">El presente presupuesto atiende al resanado y pintado de dos techos de baño.</textarea>
-          </div>
-        </div>
-
-        <!-- 3. PUNTOS DEL PRESUPUESTO -->
-        <div class="space-y-2.5 pb-3 border-b border-slate-100">
+        <!-- SECCIÓN 1: FECHA Y CALENDARIO -->
+        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-2.5">
           <div class="flex items-center justify-between">
-            <label class="font-bold text-slate-700">
-              <i class="fa-solid fa-list-ol text-slate-400 mr-1"></i>Puntos de la Obra
+            <label class="font-bold text-slate-200 flex items-center">
+              <i class="fa-regular fa-calendar-days text-emerald-400 mr-1.5 text-sm"></i>
+              Fecha del Documento
+            </label>
+            <span class="text-[10px] text-slate-400">Selector dinámico</span>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <!-- Selector de Calendario -->
+            <div>
+              <label class="text-[10.5px] text-slate-400 mb-1 block">Seleccionar en Calendario</label>
+              <input 
+                type="date" 
+                id="inputDatePicker" 
+                onchange="handleDateFromPicker(this.value)"
+                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none">
+            </div>
+
+            <!-- Texto Manual Formateado -->
+            <div>
+              <label class="text-[10.5px] text-slate-400 mb-1 block">Texto en Documento</label>
+              <input 
+                type="text" 
+                id="inputDateText" 
+                value="20 / junio / 2026" 
+                oninput="syncPreview()"
+                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 font-semibold focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none">
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 2: ENCABEZADO Y CLIENTE -->
+        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-3">
+          <div>
+            <label class="font-bold text-slate-200 mb-1 block flex items-center">
+              <i class="fa-solid fa-heading text-emerald-400 mr-1.5"></i>
+              Título del Presupuesto
+            </label>
+            <input 
+              type="text" 
+              id="inputTitle" 
+              value="PRESUPUESTO CALLE FRANCISCO PI Y MARGAL 23-5A MADRID" 
+              oninput="syncPreview()"
+              class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 font-bold uppercase focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label class="font-bold text-slate-200 mb-1 block flex items-center">
+                <i class="fa-solid fa-user text-emerald-400 mr-1.5"></i>
+                Destinatario / Saludo
+              </label>
+              <input 
+                type="text" 
+                id="inputClient" 
+                value="Sra." 
+                placeholder="Ej: Sra. Martínez"
+                oninput="syncPreview()"
+                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="font-bold text-slate-200 mb-1 block flex items-center">
+                <i class="fa-solid fa-align-left text-emerald-400 mr-1.5"></i>
+                Introducción
+              </label>
+              <textarea 
+                id="inputIntro" 
+                rows="2" 
+                oninput="syncPreview()"
+                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 focus:ring-1 focus:ring-emerald-500 focus:outline-none resize-none">El presente presupuesto atiende al resanado y pintado de dos techos de baño.</textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 3: PUNTOS DE LA OBRA -->
+        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label class="font-bold text-slate-200 flex items-center">
+              <i class="fa-solid fa-list-check text-emerald-400 mr-1.5"></i>
+              Detalle de Trabajos (Puntos)
             </label>
             <button 
               type="button" 
-              onclick="addNewPoint()" 
-              class="text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-semibold px-2 py-1 rounded-md transition flex items-center border border-emerald-200">
-              <i class="fa-solid fa-plus mr-1"></i> Agregar Punto
+              onclick="addWorkPoint()" 
+              class="px-2.5 py-1 bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 font-bold rounded-md border border-emerald-500/40 transition flex items-center text-[11px]">
+              <i class="fa-solid fa-plus mr-1"></i> Añadir Punto
             </button>
           </div>
-          <div id="pointsInputsWrapper" class="space-y-2">
-            <!-- Rellenado dinámicamente -->
+
+          <div id="pointsListControls" class="space-y-2">
+            <!-- Puntos dinámicos generados por JS -->
           </div>
         </div>
 
-        <!-- 4. NOTAS FINALES Y COSTO -->
-        <div class="space-y-2.5 pb-3 border-b border-slate-100">
-          <label class="block font-bold text-slate-700">
-            <i class="fa-solid fa-euro-sign text-slate-400 mr-1"></i>Notas y Costo Total
-          </label>
-          <div>
-            <label class="text-[11px] font-semibold text-slate-500 mb-0.5 block">Costo total de la obra</label>
-            <input 
-              type="text" 
-              id="fieldCost" 
-              value="290€ (EUROS)" 
-              oninput="updateDocumentPreview()"
-              class="w-full px-2.5 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-800 font-bold">
-          </div>
-          <div>
-            <label class="text-[11px] font-semibold text-slate-500 mb-0.5 block">Condición de Impuestos (IVA)</label>
-            <input 
-              type="text" 
-              id="fieldIva" 
-              value="LA PLANIFICACIÓN DEL PRESUPUESTO NO TENDRÁ IVA INCLUIDO." 
-              oninput="updateDocumentPreview()"
-              class="w-full px-2.5 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-800 font-medium">
-          </div>
-        </div>
-
-        <!-- 5. DESPEDIDA Y RESPONSABLE -->
-        <div class="space-y-2.5">
-          <label class="block font-bold text-slate-700">
-            <i class="fa-solid fa-signature text-slate-400 mr-1"></i>Despedida y Contacto
-          </label>
-          <div>
-            <label class="text-[11px] font-semibold text-slate-500 mb-0.5 block">Frase de Despedida</label>
-            <input 
-              type="text" 
-              id="fieldFarewell" 
-              value="DEKORA espera su pronta respuesta por:" 
-              oninput="updateDocumentPreview()"
-              class="w-full px-2.5 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-800">
-          </div>
+        <!-- SECCIÓN 4: COSTO FINAL Y NOTAS -->
+        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-3">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div>
-              <label class="text-[11px] font-semibold text-slate-500 mb-0.5 block">Nombre del Responsable</label>
+              <label class="font-bold text-slate-200 mb-1 block flex items-center">
+                <i class="fa-solid fa-euro-sign text-emerald-400 mr-1.5"></i>
+                Costo Total
+              </label>
               <input 
                 type="text" 
-                id="fieldName" 
-                value="Jimmy González" 
-                oninput="updateDocumentPreview()"
-                class="w-full px-2.5 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-800 font-bold">
+                id="inputCost" 
+                value="290€ (EUROS)" 
+                oninput="syncPreview()"
+                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 font-bold focus:ring-1 focus:ring-emerald-500 focus:outline-none">
             </div>
+
             <div>
-              <label class="text-[11px] font-semibold text-slate-500 mb-0.5 block">Teléfono de Contacto</label>
+              <label class="font-bold text-slate-200 mb-1 block flex items-center">
+                <i class="fa-solid fa-receipt text-emerald-400 mr-1.5"></i>
+                Condición IVA
+              </label>
               <input 
                 type="text" 
-                id="fieldPhone" 
+                id="inputIva" 
+                value="LA PLANIFICACIÓN DEL PRESUPUESTO NO TENDRÁ IVA INCLUIDO." 
+                oninput="syncPreview()"
+                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 5: DESPEDIDA Y RESPONSABLE (ALINEADO A LA IZQUIERDA) -->
+        <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-3">
+          <div>
+            <label class="font-bold text-slate-200 mb-1 block flex items-center">
+              <i class="fa-regular fa-comment-dots text-emerald-400 mr-1.5"></i>
+              Frase de Despedida
+            </label>
+            <input 
+              type="text" 
+              id="inputFarewell" 
+              value="DEKORA espera su pronta respuesta por:" 
+              oninput="syncPreview()"
+              class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label class="font-bold text-slate-200 mb-1 block flex items-center">
+                <i class="fa-solid fa-id-card text-emerald-400 mr-1.5"></i>
+                Nombre del Profesional
+              </label>
+              <input 
+                type="text" 
+                id="inputResponsible" 
+                value="Jimmy González" 
+                oninput="syncPreview()"
+                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 font-bold focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="font-bold text-slate-200 mb-1 block flex items-center">
+                <i class="fa-solid fa-phone text-emerald-400 mr-1.5"></i>
+                Teléfono de Contacto
+              </label>
+              <input 
+                type="text" 
+                id="inputPhone" 
                 value="685665811" 
-                oninput="updateDocumentPreview()"
-                class="w-full px-2.5 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-800 font-bold">
+                oninput="syncPreview()"
+                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-slate-200 font-bold tracking-wider focus:ring-1 focus:ring-emerald-500 focus:outline-none">
             </div>
           </div>
         </div>
@@ -303,123 +347,126 @@
       </div>
     </aside>
 
-    <!-- ÁREA DE VISTA PREVIA (Columna Derecha) -->
-    <section id="previewWrapper" class="lg:col-span-7 xl:col-span-8 flex flex-col items-center justify-start w-full overflow-x-auto pb-10">
+    <!-- ÁREA DE VISTA PREVIA DEL DOCUMENTO A4 (Derecha) -->
+    <section class="lg:col-span-7 flex flex-col items-center justify-start w-full overflow-x-auto pb-8">
       
-      <div class="no-print w-full max-w-[210mm] flex items-center justify-between mb-2 px-1 text-xs text-slate-500">
+      <div class="no-print w-full max-w-[210mm] flex items-center justify-between mb-2 text-xs text-slate-400 px-1">
         <span class="flex items-center font-medium">
-          <i class="fa-solid fa-eye text-emerald-500 mr-1.5"></i>
-          Vista Previa en Tiempo Real (A4)
+          <i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> Vista Previa A4 (Escala 100%)
         </span>
-        <span class="text-slate-400">Escala de impresión 1:1</span>
+        <span>Ajustado para descarga en PDF o impresión</span>
       </div>
 
-      <!-- DOCUMENTO IMPRIMIBLE A4 -->
-      <div id="a4Document" class="a4-page">
+      <!-- HOJA A4 IMPRIMIBLE -->
+      <div id="documentSheet" class="a4-sheet">
 
-        <!-- CABECERA: LOGO DIRECTO DE RAIZ Y CAJA DE FECHA -->
-        <header class="flex items-start justify-between mb-5">
-          <!-- Logo fijo desde 'logo.png' en raíz -->
-          <div class="flex-1 max-w-[340px]">
+        <!-- ENCABEZADO: LOGOTIPO GRANDE + CAJA DE FECHA ELEGANTE -->
+        <header class="flex items-start justify-between mb-7">
+          
+          <!-- Contenedor del Logo (Grande y protagonista) -->
+          <div class="max-w-[290px] flex items-center">
             <img 
-              id="doc-logo" 
+              id="brandLogo" 
               src="logo.png" 
-              alt="Logo deKor" 
-              onerror="this.onerror=null; this.src='https://placehold.co/250x95/ffffff/047857?text=logo.png';" 
-              class="max-h-[110px] w-auto object-contain block" />
+              alt="deKor Pintura" 
+              onerror="handleLogoError(this)" 
+              class="h-[110px] w-auto max-w-[290px] object-contain block drop-shadow-sm transition-all" />
           </div>
 
-          <!-- Caja de Fecha Verde Lima -->
+          <!-- Caja de Fecha Refinada y Corporativa -->
           <div class="pt-1">
-            <div class="fecha-badge">
-              <div class="fecha-badge-title">
+            <div class="fecha-card">
+              <div class="fecha-card-header">
                 FECHA
               </div>
-              <div id="previewDate" class="fecha-badge-val">
+              <div id="viewDate" class="fecha-card-body">
                 20 / junio / 2026
               </div>
             </div>
           </div>
+
         </header>
 
-        <!-- TÍTULO SUBRAYADO -->
-        <div class="mb-5 mt-2">
-          <h2 id="previewTitle" class="text-[16.5px] font-bold text-black uppercase tracking-wide border-b border-black pb-1 leading-snug">
+        <!-- TÍTULO PRINCIPAL SUBRAYADO -->
+        <div class="mb-5 mt-1">
+          <h2 id="viewTitle" class="text-[17px] font-bold text-black uppercase tracking-wide border-rule pb-1.5 leading-snug">
             PRESUPUESTO CALLE FRANCISCO PI Y MARGAL 23-5A MADRID
           </h2>
         </div>
 
-        <!-- DESTINATARIO / SALUDO -->
-        <div class="mb-6">
-          <p id="previewClient" class="text-[15px] font-normal text-black">
+        <!-- DESTINATARIO -->
+        <div class="mb-5">
+          <p id="viewClient" class="text-[15px] font-medium text-black">
             Sra.
           </p>
         </div>
 
-        <!-- TEXTO DE INTRODUCCIÓN -->
+        <!-- TEXTO INTRODUCTORIO -->
         <div class="mb-6">
-          <p id="previewIntro" class="text-[15px] text-black leading-relaxed">
+          <p id="viewIntro" class="text-[15px] text-black leading-relaxed">
             El presente presupuesto atiende al resanado y pintado de dos techos de baño.
           </p>
         </div>
 
-        <!-- LISTA DE PUNTOS NUMERADOS -->
-        <div id="previewPointsContainer" class="space-y-4 mb-9 text-[15px] text-black leading-relaxed">
-          <!-- Se inyecta dinámicamente -->
+        <!-- LISTA NUMERADA DE TRABAJOS -->
+        <div id="viewPointsList" class="space-y-4 mb-8 text-[15px] text-black leading-relaxed">
+          <!-- Renderizado dinámicamente -->
         </div>
 
-        <!-- SECCIÓN NOTA Y PRECIO -->
-        <div class="mb-10">
-          <h3 class="font-bold text-[15.5px] text-black uppercase mb-3 tracking-wide">
+        <!-- SECCIÓN NOTAS Y COSTOS -->
+        <div class="mb-8">
+          <h3 class="font-bold text-[15px] text-black uppercase mb-3 tracking-wide">
             NOTA:
           </h3>
-          <div class="space-y-3 pl-3 text-[14.5px] text-black">
-            <!-- Costo -->
+          <div class="space-y-3.5 pl-2 text-[14.5px] text-black">
+            <!-- Costo Total -->
             <div class="flex items-start font-bold">
-              <span class="mr-3 text-lg leading-none select-none">•</span>
-              <p>EL COSTO TOTAL DE LA OBRA ES DE <span id="previewCost">290€ (EUROS)</span></p>
+              <span class="mr-3 text-lg leading-none select-none text-black">•</span>
+              <p>EL COSTO TOTAL DE LA OBRA ES DE <span id="viewCost" class="font-extrabold">290€ (EUROS)</span></p>
             </div>
-            <!-- IVA con línea inferior continua como en la captura -->
-            <div class="flex items-start font-bold border-b border-black pb-1.5">
-              <span class="mr-3 text-lg leading-none select-none">•</span>
-              <p id="previewIva" class="tracking-wide">LA PLANIFICACIÓN DEL PRESUPUESTO NO TENDRÁ IVA INCLUIDO.</p>
+            <!-- Condición IVA con línea de cierre -->
+            <div class="flex items-start font-bold border-rule pb-2">
+              <span class="mr-3 text-lg leading-none select-none text-black">•</span>
+              <p id="viewIva" class="tracking-wide">LA PLANIFICACIÓN DEL PRESUPUESTO NO TENDRÁ IVA INCLUIDO.</p>
             </div>
           </div>
         </div>
 
-        <!-- PIE DE PÁGINA: DESPEDIDA Y FIRMA -->
+        <!-- PIE DE PÁGINA: DESPEDIDA Y RESPONSABLE (ALINEADO A LA IZQUIERDA) -->
         <footer class="mt-auto pt-6 pb-2 text-[15px] text-black">
-          <div class="flex items-baseline justify-between">
-            <div class="space-y-1">
-              <p id="previewFarewell">DEKORA espera su pronta respuesta por:</p>
-              <p class="font-semibold">
-                <span id="previewSurname">González</span>&nbsp;&nbsp;&nbsp;&nbsp;
-                <span id="previewPhone" class="font-bold tracking-wider">685665811</span>
-              </p>
-            </div>
-            <div class="text-right">
-              <p id="previewFirstname" class="font-semibold text-[15px]">Jimmy</p>
+          <div class="space-y-1.5 text-left">
+            <p id="viewFarewell" class="text-[14.5px] text-slate-900 font-normal">
+              DEKORA espera su pronta respuesta por:
+            </p>
+            <div class="flex items-baseline space-x-5 pt-1">
+              <span id="viewResponsible" class="font-bold text-[15.5px] text-black">
+                Jimmy González
+              </span>
+              <span id="viewPhone" class="font-bold text-[15.5px] tracking-wider text-black">
+                685665811
+              </span>
             </div>
           </div>
         </footer>
 
       </div>
     </section>
+
   </main>
 
-  <!-- Toast informativo para acciones -->
-  <div id="toastBox" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
-    <div class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center space-x-3 border border-slate-700">
-      <div id="toastIcon" class="text-emerald-400 text-base">
+  <!-- NOTIFICACIÓN TOAST INFORMATIVO -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-slate-950 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 border border-slate-700">
+      <div id="toastStatusIcon" class="text-emerald-400 text-lg">
         <i class="fa-solid fa-circle-check"></i>
       </div>
-      <p id="toastText" class="text-xs sm:text-sm font-medium">Operación realizada con éxito</p>
+      <p id="toastMessage" class="text-xs sm:text-sm font-semibold text-slate-200">Operación exitosa</p>
     </div>
   </div>
 
   <script>
-    /* Puntos predeterminados idénticos a las capturas de pantalla */
-    const initialPoints = [
+    /* Lista de trabajos por defecto */
+    const defaultPoints = [
       "En primer lugar se tapara el suelo y las paredes del los baños con papel y plástico para evitar mancharlo con pintura.",
       "Se raspará las zonas afectadas,para eliminar la pintura muerta de los techos. ( Desconchones )",
       "Se resanará las zonas afectadas, aplicándole dos manos de Aguaplast.",
@@ -428,27 +475,90 @@
       "Se recogerá todo el material inservible para ser depositado en los tachos de basura correspondiente."
     ];
 
-    let currentPoints = [...initialPoints];
+    let currentPoints = [...defaultPoints];
 
-    function renderPointsInputs() {
-      const wrapper = document.getElementById('pointsInputsWrapper');
+    /* Fallback en formato SVG idéntico al logo original con el pintor y salpicadura si logo.png aún no existe */
+    function handleLogoError(imgElement) {
+      imgElement.onerror = null;
+      imgElement.src = "data:image/svg+xml;utf8," + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 140" width="450" height="140">
+          <!-- deKor Pintura Vector Fallback -->
+          <g transform="translate(10, 15)">
+            <!-- Bote y salpicadura -->
+            <path d="M15 85 C10 65, 30 40, 45 45 C55 30, 75 35, 70 55 C85 50, 95 70, 75 85 Z" fill="#e11d48"/>
+            <path d="M40 50 C55 35, 75 30, 80 50 C95 40, 105 60, 90 75 Z" fill="#0284c7"/>
+            <path d="M25 70 C35 55, 55 50, 60 70 Z" fill="#facc15"/>
+            <path d="M55 65 C65 50, 85 55, 80 75 Z" fill="#16a34a"/>
+            <!-- Bote -->
+            <path d="M25 80 L30 110 L60 110 L65 80 Z" fill="#cbd5e1" stroke="#475569" stroke-width="2"/>
+            <ellipse cx="45" cy="80" rx="20" ry="5" fill="#94a3b8"/>
+            
+            <!-- Texto 'deKor' -->
+            <text x="85" y="65" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="52" fill="#000000">de</text>
+            <text x="145" y="65" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="52" fill="#16a34a">K</text>
+            <text x="180" y="65" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="52" fill="#000000">or</text>
+            
+            <!-- Texto 'PINTURA' -->
+            <text x="145" y="92" font-family="'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="24" letter-spacing="3" fill="#1e293b">PINTURA</text>
+            
+            <!-- Insignia del pintor -->
+            <g transform="translate(290, -5)">
+              <circle cx="50" cy="50" r="44" fill="#0284c7" fill-opacity="0.12" stroke="#0284c7" stroke-width="3"/>
+              <!-- Figura simplificada del pintor -->
+              <circle cx="50" cy="38" r="16" fill="#fbcfe8"/>
+              <path d="M36 28 Q50 18 64 28" fill="#ffffff" stroke="#0284c7" stroke-width="3"/>
+              <path d="M30 65 Q50 55 70 65 L68 90 L32 90 Z" fill="#0284c7"/>
+              <rect x="40" y="60" width="20" height="24" fill="#ffffff" rx="2"/>
+              <!-- Brocha -->
+              <line x1="68" y1="50" x2="84" y2="35" stroke="#78350f" stroke-width="4" stroke-linecap="round"/>
+              <rect x="80" y="28" width="10" height="12" fill="#94a3b8" rx="1"/>
+              <path d="M80 28 Q85 20 90 28" fill="#e11d48"/>
+            </g>
+          </g>
+        </svg>
+      `);
+    }
+
+    /* Manejo del Calendario dinámico con conversión a formato español */
+    function handleDateFromPicker(dateString) {
+      if (!dateString) return;
+      
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parts[0];
+        const monthIndex = parseInt(parts[1], 10) - 1;
+        const day = parseInt(parts[2], 10);
+        
+        const monthNames = [
+          "enero", "febrero", "marzo", "abril", "mayo", "junio",
+          "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+        ];
+        
+        const formatted = `${day} / ${monthNames[monthIndex]} / ${year}`;
+        document.getElementById('inputDateText').value = formatted;
+        syncPreview();
+      }
+    }
+
+    /* Renderizado de controles interactivos para los puntos */
+    function renderPointsControls() {
+      const wrapper = document.getElementById('pointsListControls');
       wrapper.innerHTML = '';
 
       currentPoints.forEach((point, index) => {
         const item = document.createElement('div');
-        item.className = "flex items-start space-x-2 bg-slate-50 p-2 rounded-lg border border-slate-200";
-
+        item.className = "flex items-start space-x-2 bg-slate-950 p-2 rounded-lg border border-slate-800";
         item.innerHTML = `
-          <span class="font-bold text-slate-500 text-xs mt-2 w-5 text-right flex-shrink-0">${index + 1}.</span>
+          <span class="font-bold text-slate-400 text-xs mt-2 w-5 text-right flex-shrink-0">${index + 1}.</span>
           <textarea 
             rows="2" 
-            class="flex-1 px-2.5 py-1.5 text-xs border border-slate-200 rounded-md focus:ring-1 focus:ring-emerald-500 focus:outline-none bg-white text-slate-800 resize-none leading-relaxed"
-            oninput="modifyPoint(${index}, this.value)">${point}</textarea>
+            class="flex-1 px-2.5 py-1.5 text-xs bg-slate-900 border border-slate-700 rounded-md focus:ring-1 focus:ring-emerald-500 focus:outline-none text-slate-200 resize-none leading-relaxed"
+            oninput="updateSinglePoint(${index}, this.value)">${point}</textarea>
           <button 
             type="button" 
-            onclick="deletePoint(${index})" 
-            title="Eliminar este punto"
-            class="text-slate-400 hover:text-rose-500 p-1.5 rounded-md hover:bg-rose-50 transition">
+            onclick="removeWorkPoint(${index})" 
+            title="Eliminar punto"
+            class="text-slate-400 hover:text-rose-400 p-1.5 rounded-md hover:bg-slate-800 transition">
             <i class="fa-solid fa-trash-can text-xs"></i>
           </button>
         `;
@@ -458,159 +568,139 @@
       renderPointsPreview();
     }
 
-    function modifyPoint(index, value) {
+    function updateSinglePoint(index, value) {
       currentPoints[index] = value;
       renderPointsPreview();
     }
 
-    function addNewPoint() {
+    function addWorkPoint() {
       currentPoints.push("Nuevo trabajo a especificar...");
-      renderPointsInputs();
-      showToast("Punto agregado al presupuesto");
+      renderPointsControls();
+      displayToast("Nuevo punto añadido");
     }
 
-    function deletePoint(index) {
+    function removeWorkPoint(index) {
       if (currentPoints.length <= 1) {
-        showToast("Debe existir al menos un punto en la lista", true);
+        displayToast("Debe haber al menos 1 punto en el presupuesto", true);
         return;
       }
       currentPoints.splice(index, 1);
-      renderPointsInputs();
-      showToast("Punto eliminado");
+      renderPointsControls();
+      displayToast("Punto eliminado");
     }
 
     function renderPointsPreview() {
-      const container = document.getElementById('previewPointsContainer');
+      const container = document.getElementById('viewPointsList');
       container.innerHTML = '';
 
       currentPoints.forEach((point, index) => {
         const row = document.createElement('div');
-        row.className = "flex items-start space-x-4 pl-2";
+        row.className = "flex items-start space-x-4 pl-1";
         row.innerHTML = `
-          <span class="font-bold text-[15px] min-w-[24px] text-right">${index + 1}.</span>
-          <p class="flex-1 text-[15px] leading-relaxed">${point}</p>
+          <span class="font-bold text-[15px] min-w-[22px] text-right text-black">${index + 1}.</span>
+          <p class="flex-1 text-[15px] leading-relaxed text-black">${point}</p>
         `;
         container.appendChild(row);
       });
     }
 
-    function updateDocumentPreview() {
+    /* Sincronización en tiempo real de todos los campos */
+    function syncPreview() {
       // 1. Fecha
-      document.getElementById('previewDate').innerText = document.getElementById('fieldDate').value || 'Sin fecha';
+      document.getElementById('viewDate').innerText = document.getElementById('inputDateText').value || 'Sin fecha';
 
-      // 2. Cliente
-      document.getElementById('previewClient').innerText = document.getElementById('fieldClient').value || '';
+      // 2. Título
+      document.getElementById('viewTitle').innerText = document.getElementById('inputTitle').value || 'PRESUPUESTO';
 
-      // 3. Título
-      document.getElementById('previewTitle').innerText = document.getElementById('fieldTitle').value || 'PRESUPUESTO';
+      // 3. Cliente
+      document.getElementById('viewClient').innerText = document.getElementById('inputClient').value || '';
 
       // 4. Introducción
-      document.getElementById('previewIntro').innerText = document.getElementById('fieldIntro').value || '';
+      document.getElementById('viewIntro').innerText = document.getElementById('inputIntro').value || '';
 
-      // 5. Costo total e IVA
-      document.getElementById('previewCost').innerText = document.getElementById('fieldCost').value || '';
-      document.getElementById('previewIva').innerText = document.getElementById('fieldIva').value || '';
+      // 5. Costo e IVA
+      document.getElementById('viewCost').innerText = document.getElementById('inputCost').value || '';
+      document.getElementById('viewIva').innerText = document.getElementById('inputIva').value || '';
 
-      // 6. Despedida y firmante
-      document.getElementById('previewFarewell').innerText = document.getElementById('fieldFarewell').value || '';
-
-      const fullName = (document.getElementById('fieldName').value || '').trim();
-      const nameParts = fullName.split(' ');
-      if (nameParts.length > 1) {
-        document.getElementById('previewFirstname').innerText = nameParts[0];
-        document.getElementById('previewSurname').innerText = nameParts.slice(1).join(' ');
-      } else {
-        document.getElementById('previewFirstname').innerText = fullName;
-        document.getElementById('previewSurname').innerText = '';
-      }
-
-      document.getElementById('previewPhone').innerText = document.getElementById('fieldPhone').value || '';
+      // 6. Despedida y Responsable (Alineación a la izquierda completa)
+      document.getElementById('viewFarewell').innerText = document.getElementById('inputFarewell').value || '';
+      document.getElementById('viewResponsible').innerText = document.getElementById('inputResponsible').value || '';
+      document.getElementById('viewPhone').innerText = document.getElementById('inputPhone').value || '';
     }
 
-    function resetAllFields() {
-      document.getElementById('fieldDate').value = "20 / junio / 2026";
-      document.getElementById('fieldClient').value = "Sra.";
-      document.getElementById('fieldTitle').value = "PRESUPUESTO CALLE FRANCISCO PI Y MARGAL 23-5A MADRID";
-      document.getElementById('fieldIntro').value = "El presente presupuesto atiende al resanado y pintado de dos techos de baño.";
-      document.getElementById('fieldCost').value = "290€ (EUROS)";
-      document.getElementById('fieldIva').value = "LA PLANIFICACIÓN DEL PRESUPUESTO NO TENDRÁ IVA INCLUIDO.";
-      document.getElementById('fieldFarewell').value = "DEKORA espera su pronta respuesta por:";
-      document.getElementById('fieldName').value = "Jimmy González";
-      document.getElementById('fieldPhone').value = "685665811";
+    function resetToDefaults() {
+      document.getElementById('inputDateText').value = "20 / junio / 2026";
+      document.getElementById('inputDatePicker').value = "";
+      document.getElementById('inputTitle').value = "PRESUPUESTO CALLE FRANCISCO PI Y MARGAL 23-5A MADRID";
+      document.getElementById('inputClient').value = "Sra.";
+      document.getElementById('inputIntro').value = "El presente presupuesto atiende al resanado y pintado de dos techos de baño.";
+      document.getElementById('inputCost').value = "290€ (EUROS)";
+      document.getElementById('inputIva').value = "LA PLANIFICACIÓN DEL PRESUPUESTO NO TENDRÁ IVA INCLUIDO.";
+      document.getElementById('inputFarewell').value = "DEKORA espera su pronta respuesta por:";
+      document.getElementById('inputResponsible').value = "Jimmy González";
+      document.getElementById('inputPhone').value = "685665811";
 
-      currentPoints = [...initialPoints];
-      renderPointsInputs();
-      updateDocumentPreview();
-      showToast("Valores restablecidos por defecto");
+      currentPoints = [...defaultPoints];
+      renderPointsControls();
+      syncPreview();
+      displayToast("Formulario restablecido a valores iniciales");
     }
 
-    function toggleSidebar() {
-      const panel = document.getElementById('sidebarPanel');
-      const wrapper = document.getElementById('previewWrapper');
+    /* Exportación robusta a PDF */
+    function handleDownloadPDF() {
+      const sheet = document.getElementById('documentSheet');
+      const btn = document.getElementById('btnExportPdf');
+      const originalText = btn.innerHTML;
 
-      if (panel.classList.contains('hidden')) {
-        panel.classList.remove('hidden');
-        wrapper.classList.remove('lg:col-span-12');
-        wrapper.classList.add('lg:col-span-7', 'xl:col-span-8');
-      } else {
-        panel.classList.add('hidden');
-        wrapper.classList.remove('lg:col-span-7', 'xl:col-span-8');
-        wrapper.classList.add('lg:col-span-12');
-      }
-    }
-
-    function generatePDF() {
-      const doc = document.getElementById('a4Document');
-      const btn = document.getElementById('btnDownloadPdf');
-      const originalHtml = btn.innerHTML;
-
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Procesando PDF...`;
+      btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Generando PDF...`;
       btn.disabled = true;
 
-      const titleVal = document.getElementById('fieldTitle').value || 'presupuesto';
-      const safeTitle = titleVal.toLowerCase().replace(/[^a-z0-9]/gi, '_').substring(0, 30);
-      const filename = `Presupuesto_${safeTitle}.pdf`;
+      const titleVal = document.getElementById('inputTitle').value || 'presupuesto';
+      const cleanName = titleVal.toLowerCase().replace(/[^a-z0-9]/gi, '_').substring(0, 32);
+      const filename = `Presupuesto_${cleanName}.pdf`;
 
-      const opt = {
+      const options = {
         margin: [0, 0, 0, 0],
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2, 
+        html2canvas: {
+          scale: 2,
           useCORS: true,
           letterRendering: true,
-          logging: false,
-          scrollY: 0
+          scrollY: 0,
+          windowWidth: 1024
         },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait' 
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait'
         }
       };
 
-      html2pdf().set(opt).from(doc).save().then(() => {
-        btn.innerHTML = originalHtml;
+      html2pdf().set(options).from(sheet).save().then(() => {
+        btn.innerHTML = originalText;
         btn.disabled = false;
-        showToast("¡PDF generado y descargado!");
-      }).catch((err) => {
-        console.error("Error al exportar PDF:", err);
-        btn.innerHTML = originalHtml;
+        displayToast("¡PDF generado y descargado correctamente!");
+      }).catch((error) => {
+        console.error("Error al generar PDF:", error);
+        btn.innerHTML = originalText;
         btn.disabled = false;
-        showToast("Error al exportar. Puedes utilizar la opción Imprimir", true);
+        // Si el navegador bloquea la descarga por iframe, se ofrece la opción de imprimir
+        window.print();
+        displayToast("Se ha abierto la ventana de impresión para guardar el PDF");
       });
     }
 
-    function showToast(message, isError = false) {
-      const toast = document.getElementById('toastBox');
-      const toastText = document.getElementById('toastText');
-      const toastIcon = document.getElementById('toastIcon');
+    function displayToast(msg, isError = false) {
+      const toast = document.getElementById('toastNotification');
+      const text = document.getElementById('toastMessage');
+      const icon = document.getElementById('toastStatusIcon');
 
-      toastText.innerText = message;
+      text.innerText = msg;
       if (isError) {
-        toastIcon.innerHTML = `<i class="fa-solid fa-circle-exclamation text-rose-400"></i>`;
+        icon.innerHTML = `<i class="fa-solid fa-circle-exclamation text-rose-400"></i>`;
       } else {
-        toastIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+        icon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
       }
 
       toast.classList.remove('translate-y-24', 'opacity-0');
@@ -619,12 +709,13 @@
       setTimeout(() => {
         toast.classList.remove('translate-y-0', 'opacity-100');
         toast.classList.add('translate-y-24', 'opacity-0');
-      }, 3000);
+      }, 3200);
     }
 
+    // Inicialización al cargar la página
     window.addEventListener('DOMContentLoaded', () => {
-      renderPointsInputs();
-      updateDocumentPreview();
+      renderPointsControls();
+      syncPreview();
     });
   </script>
 </body>
